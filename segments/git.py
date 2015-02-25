@@ -17,6 +17,12 @@ def get_git_status():
                 origin_position += u'\u21E3'
             if origin_status[0][0] == 'ahead':
                 origin_position += u'\u21E1'
+        else:
+            diverged = re.findall(
+                r"and have (\d+) and (\d+) different commit each", line)
+            if diverged:
+                origin_position = " %d" % int(diverged[0][1])
+                origin_position += u'\u21C5'
 
         if line.find('nothing to commit') >= 0:
             has_pending_commits = False
@@ -32,13 +38,13 @@ def add_git_segment():
 
     if 'Not a git repo' in err:
         return
-    
+
     branch_icon = '%s ' % powerline.branch
     if out:
         branch = out[len('refs/heads/'):].rstrip()
     else:
         branch = '(Detached)'
-  
+
     has_pending_commits, has_untracked_files, origin_position = get_git_status()
     branch += origin_position
     if has_untracked_files:
