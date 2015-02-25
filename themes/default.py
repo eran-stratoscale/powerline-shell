@@ -32,7 +32,7 @@ class DefaultColor:
     REPO_CLEAN_BG = 236  # a light green color
     REPO_CLEAN_FG = 410  # black
     REPO_DIRTY_BG = 236  # pink/red
-    REPO_DIRTY_FG = 452  # white
+    REPO_DIRTY_FG = 214  # white
     REPO_BG = 236  # pink/red
     REPO_FG = 250  # white
 
@@ -44,7 +44,7 @@ class DefaultColor:
 
     CMD_PASSED_BG = 236
     CMD_PASSED_FG = 15
-    CMD_FAILED_BG = 88
+    CMD_FAILED_BG = 452
     CMD_FAILED_FG = 15
 
     SVN_CHANGES_BG = 148
