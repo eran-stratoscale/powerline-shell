@@ -1,3 +1,4 @@
 powerline-shell.py
+.idea
 *.py[co]
 config.py
