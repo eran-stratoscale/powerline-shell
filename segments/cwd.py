@@ -32,6 +32,6 @@ def add_cwd_segment():
     if names[-1] == '~' and Color.HOME_SPECIAL_DISPLAY:
         powerline.append(' %s ' % names[-1], Color.HOME_FG, Color.HOME_BG)
     else:
-        powerline.append(' %s ' % names[-1], Color.CWD_FG, Color.PATH_BG)
+        powerline.append(' %s ' % names[-1], Color.CWD_FG, Color.PATH_BG, bold=True)
 
 add_cwd_segment()
