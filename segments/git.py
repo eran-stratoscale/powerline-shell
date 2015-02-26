@@ -2,6 +2,11 @@ import re
 import os
 import subprocess
 
+PLUS_SIGN = '+'
+UPDOWN_SIGN = u'\u21C5'
+UP_SIGN = u'\u21E1'
+DOWN_SIGN = u'\u21E3'
+
 def get_git_status():
     has_pending_commits = True
     has_untracked_files = False
@@ -14,15 +19,15 @@ def get_git_status():
         if origin_status:
             origin_position = " %d" % int(origin_status[0][1])
             if origin_status[0][0] == 'behind':
-                origin_position += u'\u21E3'
+                origin_position += DOWN_SIGN
             if origin_status[0][0] == 'ahead':
-                origin_position += u'\u21E1'
+                origin_position += UP_SIGN
         else:
             diverged = re.findall(
                 r"and have (\d+) and (\d+) different commit each", line)
             if diverged:
                 origin_position = " %d" % int(diverged[0][1])
-                origin_position += u'\u21C5'
+                origin_position += UPDOWN_SIGN
 
         if line.find('nothing to commit') >= 0:
             has_pending_commits = False
@@ -48,7 +53,7 @@ def add_git_segment():
     has_pending_commits, has_untracked_files, origin_position = get_git_status()
     branch += origin_position
     if has_untracked_files:
-        branch += ' +'
+        branch += u' %s' % PLUS_SIGN
 
     bg = Color.REPO_CLEAN_BG
     fg = Color.REPO_CLEAN_FG
