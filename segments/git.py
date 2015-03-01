@@ -10,30 +10,27 @@ DOWN_SIGN = u'\u21E3'
 def get_git_status():
     has_pending_commits = True
     has_untracked_files = False
-    origin_position = ""
-    output = subprocess.Popen(['git', 'status', '--ignore-submodules'],
-            env={"LANG": "C", "HOME": os.getenv("HOME")}, stdout=subprocess.PIPE).communicate()[0]
-    for line in output.split('\n'):
-        origin_status = re.findall(
-            r"Your branch is (ahead|behind).*?(\d+) comm", line)
-        if origin_status:
-            origin_position = " %d" % int(origin_status[0][1])
-            if origin_status[0][0] == 'behind':
-                origin_position += DOWN_SIGN
-            if origin_status[0][0] == 'ahead':
-                origin_position += UP_SIGN
-        else:
-            diverged = re.findall(
-                r"and have (\d+) and (\d+) different commit each", line)
-            if diverged:
-                origin_position = " %d" % int(diverged[0][1])
-                origin_position += UPDOWN_SIGN
+    status = ""
+    output = subprocess.Popen(['git', 'status', '--ignore-submodules'], env={"LANG": "C", "HOME": os.getenv("HOME")}, stdout=subprocess.PIPE).communicate()[0]
 
-        if line.find('nothing to commit') >= 0:
-            has_pending_commits = False
-        if line.find('Untracked files') >= 0:
-            has_untracked_files = True
-    return has_pending_commits, has_untracked_files, origin_position
+    origin_status = re.findall(r"Your branch is (ahead|behind).*?(\d+) comm", output)
+    if origin_status:
+        status = " %d" % int(origin_status[0][1])
+        if origin_status[0][0] == 'behind':
+            status += DOWN_SIGN
+        if origin_status[0][0] == 'ahead':
+            status += UP_SIGN
+
+    diverged = re.findall(r"and have (\d+) and (\d+) different commit each", output)
+    if diverged:
+        status = " %s%s%s" % (diverged[0][0], UPDOWN_SIGN, diverged[0][1])
+
+    if output.find('nothing to commit') >= 0:
+        has_pending_commits = False
+    if output.find('Untracked files') >= 0:
+        has_untracked_files = True
+
+    return has_pending_commits, has_untracked_files, status
 
 
 def add_git_segment():
