@@ -8,7 +8,7 @@ UP_SIGN = u'\u21E1'
 DOWN_SIGN = u'\u21E3'
 
 def get_git_status():
-    has_pending_commits = True
+    changes = None
     has_untracked_files = False
     status = ""
     output = subprocess.Popen(['git', 'status', '--ignore-submodules'], env={"LANG": "C", "HOME": os.getenv("HOME")}, stdout=subprocess.PIPE).communicate()[0]
@@ -25,12 +25,16 @@ def get_git_status():
     if diverged:
         status = " %s%s%s" % (diverged[0][0], UPDOWN_SIGN, diverged[0][1])
 
-    if output.find('nothing to commit') >= 0:
-        has_pending_commits = False
+    if output.find('Changes to be committed') >= 0:
+        changes = "added"
+    if output.find('Untracked files') >= 0:
+        changes = "notStaged"
+    if output.find('Changes not staged for commit') >= 0:
+        changes = "notStaged"
     if output.find('Untracked files') >= 0:
         has_untracked_files = True
 
-    return has_pending_commits, has_untracked_files, status
+    return changes, has_untracked_files, status
 
 
 def add_git_segment():
@@ -47,16 +51,20 @@ def add_git_segment():
     else:
         branch = '(detached)'
 
-    has_pending_commits, has_untracked_files, origin_position = get_git_status()
+    changes, has_untracked_files, origin_position = get_git_status()
     branch += origin_position
     if has_untracked_files:
         branch += u' %s' % PLUS_SIGN
 
     bg = Color.REPO_CLEAN_BG
     fg = Color.REPO_CLEAN_FG
-    if has_pending_commits:
-        bg = Color.REPO_DIRTY_BG
+    if changes == "added":
+        fg = Color.REPO_ADDED_FG
+        bg = Color.REPO_ADDED_BG
+    elif changes == "notStaged":
         fg = Color.REPO_DIRTY_FG
+        bg = Color.REPO_DIRTY_BG
+
 
     powerline.append(' %s' % branch_icon, fg, bg, separator='')
     powerline.append('%s ' % branch, Color.REPO_FG, Color.REPO_BG)
